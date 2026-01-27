@@ -44,7 +44,6 @@ El sistema sigue una arquitectura cliente-servidor:
 
 La comunicación entre frontend y backend se realiza mediante solicitudes HTTP utilizando JSON.
 
-
 ## 5. Módulos del Sistema
 
 ### 5.1 Módulo de Usuarios
