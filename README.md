@@ -128,7 +128,16 @@ Responsable de presentar la información al usuario de forma gráfica.
 * password_hash
 * created_at
 
-### 6.2 Tabla habits
+6.2 Tabla chequeo_habitos
+
+* id (PK)
+* user_id
+* initial_date
+* final_date
+* is_cheked
+* habit_id
+
+### 6.3 Tabla habits
 
 * id (PK)
 * user_id (FK)
@@ -137,7 +146,7 @@ Responsable de presentar la información al usuario de forma gráfica.
 * created_at
 * is_active
 
-### 6.3 Tabla habit_logs
+### 6.4 Tabla habit_logs
 
 * id (PK)
 * habit_id (FK)
