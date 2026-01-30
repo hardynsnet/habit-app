@@ -128,7 +128,7 @@ Responsable de presentar la información al usuario de forma gráfica.
 * password_hash
 * created_at
 
-6.2 Tabla chequeo_habitos
+### 6.2 Tabla chequeo_habitos
 
 * id (PK)
 * user_id
