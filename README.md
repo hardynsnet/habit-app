@@ -25,14 +25,14 @@ Incluye:
 * Gestión de hábitos
 * Registro de cumplimiento
 * Seguimiento y visualización básica
+* Notificaciones
+* Modo oscuro
 
 No incluye:
 
-* Notificaciones
 * Integraciones externas
 * Monetización
 * Aplicación móvil nativa
-
 
 ## 4. Arquitectura General
 
@@ -195,8 +195,6 @@ El proyecto se encuentra en fase de desarrollo del MVP. La estructura está pens
 
 ## 10. Posibles Extensiones Futuras
 
-* Notificaciones
-* Modo oscuro
 * Aplicación móvil
 * Categorías de hábitos
 * Exportación de datos
