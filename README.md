@@ -208,8 +208,7 @@ Proyecto desarrollado por **Harley Mosquera & Success Technology** como software
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
-###📜 Documentación Técnica de Backend - Habit (MVP)
+##📜 Documentación Técnica de Backend - Habit (MVP)
 
 Este documento detalla la arquitectura, lógica de negocio y especificaciones de la API desarrollada para la aplicación de seguimiento de hábitos.
 
