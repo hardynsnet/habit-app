@@ -202,3 +202,112 @@ El proyecto se encuentra en fase de desarrollo del MVP. La estructura está pens
 ## 11. Autor
 
 Proyecto desarrollado por **Harley Mosquera & Success Technology** como software gratuito y base tecnológica.
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+###📜 Documentación Técnica de Backend - Habit (MVP)
+
+Este documento detalla la arquitectura, lógica de negocio y especificaciones de la API desarrollada para la aplicación de seguimiento de hábitos.
+
+1. Arquitectura del Sistema
+El backend está construido sobre una arquitectura RESTful utilizando el stack PERN (PostgreSQL, Express, React, Node.js).
+
+Entorno de ejecución: Node.js
+
+Framework: Express.js
+
+ORM: Prisma (Type-safe)
+
+Base de Datos: PostgreSQL
+
+Autenticación: JWT (JSON Web Tokens)
+
+2. Modelo de Datos (Esquema Prisma)
+La base de datos se ha normalizado para garantizar integridad y evitar duplicados. La "Fuente de Verdad" para cualquier métrica es la tabla HabitLog.
+
+2.1 Tablas Principales
+Tabla,Función,Constraints Clave
+User,Almacena credenciales y perfil.,email (Unique)
+Habit,Define los hábitos de cada usuario.,userId (FK)
+HabitLog,Registro diario de cumplimiento.,"UNIQUE(habitId, date)"
+ChequeoHabito,Registro de periodos cerrados (Semanales/Mensuales).,"initial_date, final_date"
+
+Nota Senior: Se definió el campo date en HabitLog como tipo @db.Date para evitar conflictos de horas/minutos en el cálculo de rachas.
+
+3. Lógica de Negocio: Algoritmo de Rachas (Streaks)
+El sistema no guarda las rachas en la base de datos para evitar desincronización. Se calculan dinámicamente mediante SQL avanzado (CTEs).
+
+3.1 Racha Diaria (Daily Streak)
+Se utiliza una Función de Ventana (ROW_NUMBER) para detectar la continuidad.
+
+Lógica: Se comparan los días registrados con una serie aritmética generada en tiempo real. Si el día N atrás no coincide con la fecha del registro, la racha se rompe.
+
+Regla de Oro: El cálculo se detiene en el primer día donde completed = false o donde no exista registro.
+
+3.2 Racha Semanal/Mensual
+Se utiliza DATE_TRUNC para agrupar los logs. Una semana o mes se considera "cumplido" si existe al menos un registro con completed = true en dicho periodo.
+
+4. Especificaciones de la API (Endpoints)
+4.1 Módulo de Autenticación
+POST /auth/register: Recibe name, email, password. Cifra la clave con BcryptJS (10 salt rounds).
+
+POST /auth/login: Valida credenciales y retorna un JWT con una validez de 24h.
+
+4.2 Módulo de Hábitos
+GET /habits: Retorna la lista de hábitos del usuario autenticado. Incluye el cálculo de racha actual mediante $queryRaw.
+
+POST /habits: Crea un nuevo hábito (daily, weekly, monthly).
+
+PUT /habits/:id: Edición de nombre o frecuencia.
+
+DELETE /habits/:id: Eliminación lógica (cambio de estado a is_active: false).
+
+4.3 Módulo de Cumplimiento (Check-in)
+POST /habits/:id/check:
+
+Utiliza la operación upsert de Prisma (si existe el log, lo actualiza; si no, lo crea).
+
+Payload: { "date": "YYYY-MM-DD", "completed": boolean }.
+
+Response: Retorna el log actualizado y la racha recalculada.
+
+4.4 Módulo de Visualización y Perfil
+GET /habits/:id/calendar?month=YYYY-MM: Filtra los logs entre el primer y último día del mes solicitado. Formatea la salida a ISO Strings para consistencia en el Frontend.
+
+GET /users/me: Retorna la información del token decodificado y datos de perfil.
+
+PUT /users/me: Permite actualizar nombre, correo o contraseña de forma segura.
+
+5. Seguridad e Integridad
+Protección de Rutas: Middleware authenticateToken que verifica el Bearer Token en cada petición privada.
+
+Aislamiento de Datos: Todas las consultas SQL y de Prisma incluyen obligatoriamente el filtro where: { userId: req.user.id } para evitar que un usuario acceda a datos de otro.
+
+Prevención de Inyecciones: Uso de consultas parametrizadas en $queryRaw para evitar SQL Injection.
+
+6. Próximos Pasos (Frontend)
+El backend está configurado para manejar CORS. La estructura de respuesta JSON está optimizada para ser consumida por:
+
+Axios como cliente HTTP.
+
+Context API o Zustand para manejar el estado global del usuario y el token.
+
+Chart.js / Recharts para consumir los datos del endpoint de calendario y métricas.
+
+Comandos de Configuración Rápida
+Bash
+# Instalar dependencias
+npm install
+
+# Generar cliente de Prisma
+npx prisma generate
+
+# Aplicar migraciones a la base de datos
+npx prisma migrate dev --name init
+
+# Iniciar servidor
+npm run dev
